@@ -1,6 +1,5 @@
 package io.github.robinhosz.quarkussocial.rest.resources;
 
-import io.github.robinhosz.quarkussocial.rest.deserializer.JsonbSerializer;
 import io.github.robinhosz.quarkussocial.rest.dto.CreateUserRequest;
 import io.github.robinhosz.quarkussocial.rest.dto.ResponseError;
 import io.quarkus.test.common.http.TestHTTPResource;
@@ -85,17 +84,10 @@ class UserResourceTest {
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .post(apiUrl)
+                .get(apiUrl)
                 .then()
                 .statusCode(200)
                 .body("size()", Matchers.is(1));
     }
 
-    @Test
-    void testFindAllUsers() {
-    }
-
-    @Test
-    void deleteUser() {
-    }
 }
