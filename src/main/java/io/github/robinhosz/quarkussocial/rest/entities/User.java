@@ -1,16 +1,17 @@
-package io.github.robinhosz.quarkussocial.rest.domain.model;
+package io.github.robinhosz.quarkussocial.rest.entities;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+
 import jakarta.persistence.*;
 import lombok.*;
 
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
-@Builder
+@NoArgsConstructor
 @Entity
 @Table(name = "tb_users")
-public class User extends PanacheEntityBase {
+public class User  {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,7 +19,4 @@ public class User extends PanacheEntityBase {
     private String name;
     private Integer age;
 
-    public User() {
-
-    }
 }
