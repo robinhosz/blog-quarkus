@@ -4,6 +4,7 @@ import io.github.robinhosz.quarkussocial.rest.dto.CreatePostRequest;
 import io.github.robinhosz.quarkussocial.rest.dto.PostResponse;
 import io.github.robinhosz.quarkussocial.rest.entities.Post;
 import io.github.robinhosz.quarkussocial.rest.entities.User;
+import io.github.robinhosz.quarkussocial.rest.repository.FollowerRepository;
 import io.github.robinhosz.quarkussocial.rest.repository.PostRepository;
 import io.github.robinhosz.quarkussocial.rest.repository.UserRepository;
 import io.quarkus.hibernate.orm.panache.PanacheQuery;
@@ -27,7 +28,11 @@ public class PostResource {
     @Inject
     private UserRepository userRepository;
 
-    @Inject private PostRepository postRepository;
+    @Inject
+    private PostRepository postRepository;
+
+    @Inject
+    private FollowerRepository followerRepository;
 
     @POST
     @Transactional
@@ -49,12 +54,24 @@ public class PostResource {
     }
 
     @GET
-    public Response findAllPosts(@PathParam("userId") Long userId) {
+    public Response findAllPosts(@PathParam("userId") Long userId, @HeaderParam("followerId") Long followerId) {
         Optional<User> user = userRepository.findByIdOptional(userId);
 
         if(!user.isPresent()) {
             return Response.status(Response.Status.NOT_FOUND).build();
         }
+
+        if(followerId == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("You forgot the header followerId").build();
+        }
+
+        Optional<User> follower = userRepository.findByIdOptional(followerId);
+
+       boolean follows = followerRepository.follows(follower.get(), user.get());
+
+       if(!follows) {
+           return Response.status(Response.Status.FORBIDDEN).entity("You can't see these posts").build();
+       }
 
         var query = postRepository.find("user", Sort.by("dateTime", Sort.Direction.Descending), user.get());
 
